@@ -46,17 +46,105 @@ MIT License Applies
 					scroll_interval = setInterval(scrollRight, 40);
 				}, function() {
 					clearInterval(scroll_interval);
-				}).mousedown(function() {
+				});
+				easts.mousedown(function() {
+					clearInterval(scroll_interval);
 					scroll_interval = setInterval(scrollRight, 10);
 				});
+				
 				var wests = $('.west');
 				wests.hover(function() {
 					scroll_interval = setInterval(scrollLeft, 40);
 				}, function() {
 					clearInterval(scroll_interval);
-				}).mousedown(function() {
+				});
+				wests.mousedown(function() {
+					clearInterval(scroll_interval);
 					scroll_interval = setInterval(scrollLeft, 10);
 				});
+				
+				var norths = $(".north");
+				norths.hover(function() {
+					scroll_interval = setInterval(scrollUp, 40);
+				}, function() {
+					clearInterval(scroll_interval);
+				});
+				norths.mousedown(function() {
+					clearInterval(scroll_interval);
+					scroll_interval = setInterval(scrollUp, 10);
+				});
+				
+				var souths = $(".south");
+				souths.hover(function() {
+					scroll_interval = setInterval(scrollDown, 40);
+				}, function() {
+					clearInterval(scroll_interval);
+				});
+				souths.mousedown(function() {
+					clearInterval(scroll_interval);
+					scroll_interval = setInterval(scrollDown, 10);
+				});
+				
+				var northWests = $(".north_west");
+				northWests.hover(function() {
+					scroll_interval = setInterval(scrollNorthWest, 40);
+				}, function() {
+					clearInterval(scroll_interval);
+				});
+				northWests.mousedown(function() {
+					clearInterval(scroll_interval);
+					scroll_interval = setInterval(scrollNorthWest, 10);
+				});
+				
+				var northEasts = $(".north_east");
+				northEasts.hover(function() {
+					scroll_interval = setInterval(scrollNorthEast, 40);
+				}, function() {
+					clearInterval(scroll_interval);
+				});
+				northEasts.mousedown(function() {
+					clearInterval(scroll_interval);
+					scroll_interval = setInterval(scrollNorthEast, 10);
+				});
+				
+				var southWests = $(".south_west");
+				southWests.hover(function() {
+					scroll_interval = setInterval(scrollSouthWest, 40);
+				}, function() {
+					clearInterval(scroll_interval);
+				});
+				southWests.mousedown(function() {
+					clearInterval(scroll_interval);
+					scroll_interval = setInterval(scrollSouthWest, 10);
+				});
+				
+				var southEasts = $(".south_east");
+				southEasts.hover(function() {
+					scroll_interval = setInterval(scrollSouthEast, 40);
+				}, function() {
+					clearInterval(scroll_interval);
+				});
+				southEasts.mousedown(function() {
+					clearInterval(scroll_interval);
+					scroll_interval = setInterval(scrollSouthEast, 10);
+				});
+				
+				function scrollNorthWest() {
+					scrollUp();
+					scrollLeft();
+				}
+				function scrollNorthEast() {
+					scrollUp();
+					scrollRight();
+				}
+				function scrollSouthWest() {
+					scrollDown();
+					scrollLeft();
+				}
+				function scrollSouthEast() {
+					scrollDown();
+					scrollRight();
+				}
 				
 				function scrollRight() {
 					sl = $(".jqgantt-headers").position().left;
@@ -65,7 +153,6 @@ MIT License Applies
 						$(".jqgantt-grids").css('left', sl - 5 + "px");
 					}
 				}
-				
 				function scrollLeft() {
 					sl = $(".jqgantt-headers").position().left;
 					if (sl < max_left) {
@@ -73,8 +160,20 @@ MIT License Applies
 						$(".jqgantt-grids").css('left', sl + 5 + "px");
 					}
 				}
-				
-				
+				function scrollUp() {
+					st = $(".jqgantt-labels").position().top;
+					if (st < max_top) {
+						$(".jqgantt-labels").css('top', st + 5 + "px");
+						$(".jqgantt-grids").css('top', st + 5 + "px");
+					}
+				}
+				function scrollDown() {
+					st = $(".jqgantt-labels").position().top;
+					if (st > min_top) {
+						$(".jqgantt-labels").css('top', st - 5 + "px");
+						$(".jqgantt-grids").css('top', st - 5 + "px");
+					}
+				}				
 			});
 		}
 	});
@@ -97,7 +196,7 @@ MIT License Applies
 				"border-top-left-radius": "10px",
 				"background": "transparent url('../images/north_west.png') no-repeat left center"
 			}}));
-			container.before($("<div>", { "class": "west scroller", "css": {
+			container.before($("<div>", { "class": "north scroller", "css": {
 				"width": calcPart * 2 - 1 + "px",
 				"height": "20px",
 				"float": "left",
