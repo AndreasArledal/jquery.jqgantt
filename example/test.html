@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta charset="utf-8">
+	<meta name="Author" content="Andreas Arledal">
+	<title>jqgantt example</title>
+	<link rel="stylesheet" href="../jquery.jqgantt.css" type="text/css" media="screen" title="no title" charset="utf-8">
+			<script src="../lib/jquery-1.4.4.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			
+			var scroll_interval;
+			var max_top = $("#content-labels").position().top;
+			var min_top = $("#content-labels").parent().height() - $("#content-labels").height();
+			var max_left = $("#header-right").position().left;
+			var min_left = $("#header-right").parent().width() - $("#header-right").width();
+			
+			$("#down").hover(function() {
+				scroll_interval = setInterval(scrolldown, 40);
+			}, function() {
+				clearInterval(scroll_interval);
+			});
+			$("#up").hover(function() {
+				scroll_interval = setInterval(scrollup, 40);
+			}, function() {
+				clearInterval(scroll_interval);
+			});
+			$("#right").hover(function() {
+				scroll_interval = setInterval(scrollright, 40);
+			}, function() {
+				clearInterval(scroll_interval);
+			});
+			$("#left").hover(function() {
+				scroll_interval = setInterval(scrollleft, 40);
+			}, function() {
+				clearInterval(scroll_interval);
+			});
+			
+			function scrolldown() {
+				var st = $("#content-labels").position().top;
+				if (st > min_top) {
+					$("#content-labels").css('top', st - 5 + "px");
+					$("#content-bars").css('top', st - 5 + "px");
+				}
+			}
+			function scrollup() {
+				var st = $("#content-labels").position().top;
+				if (st < max_top) {
+					$("#content-labels").css('top', st + 5 + "px");
+					$("#content-bars").css('top', st + 5 + "px");
+				}
+			}
+			function scrollright() {
+				var sl = $("#header-right").position().left;
+				if (sl > min_left) {
+					$("#header-right").css('left', sl - 5 + "px");
+					$("#content-bars").css('left', sl - 5 + "px");
+				}
+			}
+			function scrollleft() {
+				var sl = $("#header-right").position().left;
+				if (sl < max_left) {
+					$("#header-right").css('left', sl + 5 + "px");
+					$("#content-bars").css('left', sl + 5 + "px");
+				}
+			}
+			
+		});
+	    function handleScroll()
+	    {
+	        document.getElementById('header-right').style.top = "0px";
+	    }	
+
+	  </script
+	<body>
+		<h1>jqgantt</h1>
+		<div id="info"></div>
+		<div id="container" style="width: 300px; height: 300px; overflow: hidden; position: relative;">
+			<div id="up" style="position: absolute; z-index: 1000; top: 100px; width: 300px; height: 20px;"></div>
+			<div id="left" style="position: absolute; z-index: 1000; left: 100px; width: 20px; height: 280px;"></div>
+			<div id="right" style="position: absolute; z-index: 1000; right: 0; width: 20px; height: 280px;"></div>
+			<div id="down" style="position: absolute; z-index: 1000; bottom: 0px; width: 300px; height: 20px;"></div>
+			<div id="header-left" style="position: fixed;  width: 100px; height: 100px; background-color: red; z-index: 200;"></div>
+			<div id="header-right" style="width: 500px; height: 100px; background-color: blue; position: absolute; left: 100px; z-index: 100;">Hej</div>
+			<div id="content-labels" style="width: 100px; height: 400px; background-color: green; position: absolute; top: 100px; z-index: 50;">Hej</div>
+			<div id="content-bars" style="width: 500px; height: 400px; background-color: yellow; position: absolute; left: 100px; top: 100px;">Hej</div>
+		</div>
+			
+		
+	</body>
+</html>

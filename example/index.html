@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta charset="utf-8">
+	<meta name="Author" content="Andreas Arledal">
+	<title>jqgantt example</title>
+	<link rel="stylesheet" href="../jquery.jqgantt.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	
+	<body>
+		<h1>jqgantt</h1>
+		<div id="gantt"></div>
+		
+		
+		<script src="../lib/jquery-1.4.4.min.js"></script>
+		<script src="../lib/date.js"></script>
+		<script src="../lib/jquery.fixedtable.js"></script>
+		<script src="../jquery.jqgantt.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			var ganttData = [
+				{
+					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
+				},
+				{
+					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
+				},
+				{
+					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
+				},
+				{
+					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
+				},
+				{
+					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
+				},
+				{
+					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
+				},
+				{
+					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
+				},
+				{
+					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
+				},
+				{
+					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
+				},
+				{
+					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
+				},
+				{
+					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
+				},
+				{
+					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
+				},
+				{
+					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
+				},
+				{
+					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
+				},
+			]
+			$(function(){
+				$("#gantt").jqgantt({
+					data: ganttData,
+					width: 800,
+					cellWidth: 21
+				});
+			});
+			
+			
+			
+		</script>
+	</body>
+</html>

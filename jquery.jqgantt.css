@@ -1,0 +1,115 @@
+.jqgantt-wrapper {
+	border: 1px solid #999;
+	position: relative;
+	overflow: hidden;
+	float: left;
+	font-family: tahoma,verdana,helvetica;
+	font-size: 12.5px;
+}
+.jqgantt-west-scrollers,
+.jqgantt-east-scrollers {
+	float: left;
+}
+.jqgantt-west-scrollers {
+	clear: both;
+}
+
+.jqgantt-fixed {
+	position: absolute;
+	width: 140px;
+	height: 65px;
+	z-index: 200;
+	border-right: 1px solid #999;
+	background: #fff;
+}
+
+.jqgantt-headers {
+	height: 65px;
+	position: absolute;
+	left: 140px;
+	z-index: 100;
+}
+
+
+.jqgantt-header-month,
+.jqgantt-header-week,
+.jqgantt-header-day {
+	float: left;
+	text-align: center;
+}
+
+.jqgantt-header-month {
+	width: 60px;
+	height: 20px;
+	border-right: 1px solid #d0d0d0;
+	line-height: 20px;
+}
+
+.jqgantt-header-week {
+	width: 40px;
+	height: 20px;
+	border-right: 1px solid #d0d0d0;
+	border-top: 1px solid #d0d0d0;
+	line-height: 20px;
+}
+
+.jqgantt-header-day {
+	width: 20px;
+	height: 20px;
+	border-right: 1px solid #f0f0f0;
+	border-top: 1px solid #d0d0d0;
+	line-height: 20px;
+	color: #777;
+}
+
+.jqgantt-header-months,
+.jqgantt-header-weeks,
+.jqgantt-header-days {
+	clear: both;
+}
+.jqgantt-labels {
+	width: 140px;
+	border-right: 1px solid #999;
+	border-top: 1px solid #999;
+	position: absolute;
+	top: 65px;
+	z-index: 50;
+}
+.jqgantt-blocks, .jqgantt-grids {
+	position: absolute;
+	left: 140px;
+	top: 65px;
+	border-top: 1px solid #f0f0f0;
+}
+
+.jqgantt-label {
+	height: 22px;
+	border-bottom: 1px solid #999;
+	padding: 4px;
+	background: #fff;
+}
+.jqgantt-block {
+	position: relative;
+	height: 24px;
+	background-color: #E5ECF9;
+	border: 1px solid #c0c0c0;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+.jqgantt-grid-row {
+	position: relative;
+	clear: both;
+}
+.jqgantt-grid-row-cell {
+	border-right: 1px solid #f0f0f0;
+	border-bottom: 1px solid #f0f0f0;
+	height: 30px;
+	float: left;
+	width: 20px;
+}
+.jqgantt-grid-row-cell.weekend {
+	background-color: #fafafa;
+}
