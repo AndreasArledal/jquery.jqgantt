@@ -13,16 +13,38 @@ MIT License Applies
 			
 			// Set default values
 			var defaults = {
+				zoomLevel: "day",
 				cellWidth: 21,
 				width: 800,
 				height: 400,
-				outerBorder: "1px solid #999"
+				outerBorder: "1px solid #999",
+				behavior: {
+	            	clickable: true,
+	            	draggable: true,
+	            	resizable: true
+	            }
 			};
 
 			var options = $.extend(defaults, options);
-			
+
 			return this.each(function() {
 				var o = options;
+				
+				var headerPartsHeight = 22;
+				var headersHeight;
+				switch (o.zoomLevel) {
+					case "day":
+						headersHeight = headerPartsHeight * 3;
+						break;
+					case "week":
+						headersHeight = headerPartsHeight * 2;
+						break;
+					case "month":
+						headersHeight = headerPartsHeight;
+						break;
+				}
+				o.headersHeight = headersHeight;
+				
 				var startEnd = DateUtils.getBoundaryDatesFromData(o.data, 10);
 				o.start = startEnd[0];
 				o.end = startEnd[1];
@@ -34,6 +56,8 @@ MIT License Applies
 				BuildData.rows(o, container);
 
 				// Behaviour
+				new Behavior(container, o).apply();
+				
 				var scroll_interval;
 				
 				var max_top = $(".jqgantt-labels").position().top;
@@ -307,104 +331,297 @@ MIT License Applies
 			
 		monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 		rowDivs: "",
-		totalDates: 1,
-		
+		gridLength: 1,
+		totalDays: 1,
+				
 		headers: function (opts, container) {
-			container.append($("<div>", { "class": "jqgantt-fixed"}));
-			var headersDiv = $("<div>", { "class": "jqgantt-headers"});
+			container.append($("<div>", { "class": "jqgantt-fixed", "css": {
+				"height": opts.headersHeight + "px"
+			}}));
+			var headersDiv = $("<div>", { "class": "jqgantt-headers", "css": {
+				"height": opts.headersHeight + "px"
+			}});
 			container.append(headersDiv);
 			var monthsDiv = $("<div>", { "class": "jqgantt-header-months" });
-			var weeksDiv = $("<div>", { "class": "jqgantt-header-weeks"});
-            var daysDiv = $("<div>", { "class": "jqgantt-header-days" });
-			headersDiv.append(monthsDiv).append(weeksDiv).append(daysDiv);
+			headersDiv.append(monthsDiv);
+			if(opts.zoomLevel == "week") {
+				var weeksDiv = $("<div>", { "class": "jqgantt-header-weeks"});
+				headersDiv.append(weeksDiv);
+			} else if (opts.zoomLevel == "day") {
+				var weeksDiv = $("<div>", { "class": "jqgantt-header-weeks"});
+            	var daysDiv = $("<div>", { "class": "jqgantt-header-days" });
+				headersDiv.append(weeksDiv).append(daysDiv);
+			}
 			
-			var last = opts.start.clone().add(-4).days();
-			if (last.getDate() > 24) { 
-				last.set({day: 24}); 
+			var last;
+			var end;
+			switch (opts.zoomLevel) {
+				case "day":
+					last = opts.start.clone().add(-4).days();
+					if (last.getDate() > 24) { 
+						last.set({day: 24}); 
+					}
+					end = opts.end.clone().add(4).days();
+					if (end.getDate() < 4) {
+						end.set({day: 4});
+					}
+					break;
+				case "week":
+					last = opts.start.clone().moveToDayOfWeek(1, -1);
+					end = opts.end.clone().moveToDayOfWeek(0);
+					break;
+				case "month":
+					last = opts.start.clone().moveToFirstDayOfMonth();
+					end = opts.end.clone().moveToLastDayOfMonth();
+					break;
 			}
 			var lastMonth = last.getMonth();
 			var lastWeek = last.getWeek();
 			
 			var daysInWeek = 0;
 			var daysInMonth = 0;
-			
-			var end = opts.end.clone().add(4).days();
-			if(end.getDate() < 4) {
-				end.set({day: 4});
-			}
+			var weeksInMonth = 0;
 			
 			var daysBetween = DateUtils.daysBetween(last, end);
-			headersDiv.css('width', daysBetween * opts.cellWidth);
+			BuildData.totalDays = daysBetween;
+			var numCells = daysBetween; 
+			switch (opts.zoomLevel) {
+				case "week":
+					numCells = (daysBetween + 1) / 7;
+					break;
+				case "month":
+					numCells = DateUtils.monthsBetween(last, end);
+					break;
+			}
+			headersDiv.css('width', numCells * opts.cellWidth);
 			
 			while (last.compareTo(end) == -1) {
 				daysInWeek += 1;
 				daysInMonth += 1;
 				var next = last.clone().addDays(1);
-				daysDiv.append($("<div>", { "class": "jqgantt-header-day", "css": { "width": opts.cellWidth -1 + "px"}}).append(last.getDate()));
-				if (lastWeek != next.getWeek()) {
-					weeksDiv.append($("<div>", {
-						"class": "jqgantt-header-week",
-						"style": "width: " + (daysInWeek * opts.cellWidth - 1) + "px"
-					}).append(last.getWeek()));
-					lastWeek = next.getWeek();
-					daysInWeek = 0;
+				if (opts.zoomLevel == "day") {
+					daysDiv.append($("<div>", { "class": "jqgantt-header-day", "css": { "width": opts.cellWidth -1 + "px"}}).append(last.getDate()));
+					BuildData.rowDivs += '<div class="jqgantt-grid-row-cell';
+					if (opts.zoomLevel == "day" && DateUtils.isWeekend(last)) {
+						BuildData.rowDivs += ' weekend';
+					}
+					BuildData.rowDivs += '" style="width: ' + (opts.cellWidth - 1) + 'px;"></div>';
+					BuildData.gridLength += 1;
+				}
+				if (opts.zoomLevel == "day" || opts.zoomLevel == "week") {
+					if (lastWeek != next.getWeek()) {
+						var weeksWidth;
+						if (opts.zoomLevel == "week") {
+							weeksWidth = opts.cellWidth - 1;
+							BuildData.rowDivs += '<div class="jqgantt-grid-row-cell';
+							if (opts.zoomLevel == "day" && DateUtils.isWeekend(last)) {
+								BuildData.rowDivs += ' weekend';
+							}
+							BuildData.rowDivs += '" style="width: ' + (opts.cellWidth - 1) + 'px;"></div>';
+							BuildData.gridLength += 1;
+						} else {
+							weeksWidth = daysInWeek * opts.cellWidth - 1;
+						}
+						weeksDiv.append($("<div>", {
+							"class": "jqgantt-header-week",
+							"style": "width: " + weeksWidth + "px"
+						}).append(last.getWeek()));
+						lastWeek = next.getWeek();
+						daysInWeek = 0;
+						weeksInMonth += 1;
+					}
 				}
 				if (lastMonth != next.getMonth()) {
+					var monthsWidth;
+					if (opts.zoomLevel == "month") {
+						monthsWidth = opts.cellWidth - 1;
+						BuildData.rowDivs += '<div class="jqgantt-grid-row-cell';
+						if (opts.zoomLevel == "day" && DateUtils.isWeekend(last)) {
+							BuildData.rowDivs += ' weekend';
+						}
+						BuildData.rowDivs += '" style="width: ' + (opts.cellWidth - 1) + 'px;"></div>';
+						BuildData.gridLength += 1;
+					} else if (opts.zoomLevel == "week") {
+						monthsWidth = weeksInMonth * opts.cellWidth -1;
+					} else {
+						monthsWidth = daysInMonth * opts.cellWidth - 1
+					}
 					monthsDiv.append($("<div>", {
 						"class": "jqgantt-header-month",
-						"style": "width: " + (daysInMonth * opts.cellWidth - 1) + "px"
+						"style": "width: " + monthsWidth + "px"
 					}).append(BuildData.monthNames[last.getMonth()] + "/" + last.getFullYear()));
 					lastMonth = next.getMonth();
 					daysInMonth = 0;
+					weeksInMonth = 0;
 				}
-				BuildData.rowDivs += '<div class="jqgantt-grid-row-cell';
-				if (DateUtils.isWeekend(last)) {
-					BuildData.rowDivs += ' weekend';
-				}
-				BuildData.rowDivs += '" style="width: ' + opts.cellWidth + '"></div>';
-				BuildData.totalDates += 1;
+				
 				last = next;
 			}
-			daysDiv.find("div:last").addClass('last');
-			weeksDiv.append($("<div>", {
-				"class": "jqgantt-header-week last",
-				"style": "width: " + (daysInWeek * opts.cellWidth - 1) + "px"
-			}).append(end.getWeek()));
-			monthsDiv.append($("<div>", {
+			if (opts.zoomLevel == "day") {
+				daysDiv.find("div:last").addClass('last');
+			}
+			if (opts.zoomLevel == "day" || opts.zoomLevel == "week") {
+				var weeksWidth;
+				if (opts.zoomLevel == "week") {
+					weeksWidth = opts.cellWidth - 1;
+					BuildData.rowDivs += '<div class="jqgantt-grid-row-cell';
+					if (opts.zoomLevel == "day" && DateUtils.isWeekend(last)) {
+						BuildData.rowDivs += ' weekend';
+					}
+					BuildData.rowDivs += '" style="width: ' + (opts.cellWidth - 1) + 'px;"></div>';
+				} else {
+					weeksWidth = daysInWeek * opts.cellWidth - 1;
+				}
+				weeksDiv.append($("<div>", {
+					"class": "jqgantt-header-week last",
+					"style": "width: " + weeksWidth + "px"
+				}).append(end.getWeek()));
+			}
+			var monthsWidth;
+			if (opts.zoomLevel == "month") {
+				monthsWidth = opts.cellWidth - 1;
+				BuildData.rowDivs += '<div class="jqgantt-grid-row-cell';
+				if (opts.zoomLevel == "day" && DateUtils.isWeekend(last)) {
+					BuildData.rowDivs += ' weekend';
+				}
+				BuildData.rowDivs += '" style="width: ' + (opts.cellWidth - 1) + 'px;"></div>';
+			} else if (opts.zoomLevel == "week") {
+				monthsWidth = (weeksInMonth + 1) * opts.cellWidth -1;
+			} else {
+				monthsWidth = daysInMonth * opts.cellWidth - 1
+			}
+			var monthDiv = $("<div>", {
 				"class": "jqgantt-header-month last",
-				"style": "width: " + (daysInMonth * opts.cellWidth - 1) + "px"
-			}).append(BuildData.monthNames[last.getMonth()] + "/" + last.getFullYear()));
+				"style": "width: " + monthsWidth + "px"
+			});
+			monthsDiv.append(monthDiv);
+			if (monthsWidth > 50) {
+				monthDiv.append(BuildData.monthNames[last.getMonth()] + "/" + last.getFullYear());
+			}
 		},
 		
 		rows: function(opts, container) {
-			var labelsDiv = $("<div>", { "class": "jqgantt-labels" });
-			var blocksDiv = $("<div>", { "class": "jqgantt-blocks", "css": { 
-				"width": opts.cellWidth * BuildData.totalDates + "px"
+			var daySize = DateUtils.monthsBetween(opts.start, opts.end) / DateUtils.daysInMonths(opts.start, opts.end);
+			var labelsDiv = $("<div>", { "class": "jqgantt-labels", "css": {
+				"top": opts.headersHeight + "px"
 			}});
 			var gridDiv = $("<div>", { "class": "jqgantt-grids", "css": {
-				"width": opts.cellWidth * BuildData.totalDates + "px"
+				"width": opts.cellWidth * BuildData.gridLength + "px",
+				"top": opts.headersHeight + "px"
 			}});
-			container.append(labelsDiv).append(blocksDiv).append(gridDiv);
+			container.append(labelsDiv).append(gridDiv);
 			for (var i = 0; i < opts.data.length; i++) {
-				var size = DateUtils.daysBetween(opts.data[i].start, opts.data[i].end) + 1;
-				var offset = DateUtils.daysBetween(opts.start, opts.data[i].start) + 4;
+				var size, offset;
+				switch (opts.zoomLevel) {
+					case "day":
+						size = DateUtils.daysBetween(opts.data[i].start, opts.data[i].end) + 1;
+						offset = DateUtils.daysBetween(opts.start, opts.data[i].start) + 4;
+						break;
+					case "week":
+						size = DateUtils.daysBetween(opts.data[i].start, opts.data[i].end) / 7 + 1;
+						offset = DateUtils.daysBetween(opts.start, opts.data[i].start) / 7;
+						break;
+					case "month":
+						size = (DateUtils.daysBetween(opts.data[i].start, opts.data[i].end) + 1) * daySize;
+						offset = DateUtils.daysBetween(opts.start, opts.data[i].start) * daySize;
+						break;
+				}
+				var classes = "jqgantt-block" + ((opts.data[i].class) ? ' ' + opts.data[i].class : '');
 				labelsDiv.append('<div class="jqgantt-label">'+opts.data[i].name+"</div>");
 				var row = $("<div>", { "class": "jqgantt-grid-row" });
 				var blockContainer = $("<div>", {"class": "jqgantt-blocks-row" });
 				gridDiv.append(row).append(blockContainer);
 				row.append(BuildData.rowDivs);
 				var div = $("<div>", {
-					"class": "jqgantt-block",
+					"class": classes,
 					"css": {
 						"width": ((size * opts.cellWidth) - 7) + "px",
 						"margin-left": ((offset * (opts.cellWidth) + 3)) + "px",
 						"z-index": "2"
 					}
 				});
+				if (opts.data[i].color) {
+					div.css('background-color', opts.data[i].color);
+				}
 				blockContainer.append(div);
 			}
 		}
 	};
+	
+	var Behavior = function (div, opts) {
+		
+		function apply() {
+			
+			if (opts.behavior.clickable) { 
+            	bindBlockClick(div, opts.behavior.onClick); 
+        	}
+        	/*
+            if (opts.behavior.resizable) { 
+            	bindBlockResize(div, opts.cellWidth, opts.start, opts.behavior.onResize); 
+        	}
+            
+            if (opts.behavior.draggable) { 
+            	bindBlockDrag(div, opts.cellWidth, opts.start, opts.behavior.onDrag); 
+        	}
+			*/
+		}
+
+        function bindBlockClick(div, callback) {
+            jQuery("div.jqgantt-block", div).live("click", function () {
+                if (callback) { callback(jQuery(this).data("block-data")); }
+            });
+        }
+        /*
+        function bindBlockResize(div, cellWidth, startDate, callback) {
+        	jQuery("div.jqgantt-block", div).resizable({
+        		grid: cellWidth, 
+        		handles: "e,w",
+        		stop: function () {
+        			var block = jQuery(this);
+        			updateDataAndPosition(div, block, cellWidth, startDate);
+        			if (callback) { callback(block.data("block-data")); }
+        		}
+        	});
+        }
+        
+        function bindBlockDrag(div, cellWidth, startDate, callback) {
+        	jQuery("div.jqgantt-block", div).draggable({
+        		axis: "x", 
+        		grid: [cellWidth, cellWidth],
+        		stop: function () {
+        			var block = jQuery(this);
+        			updateDataAndPosition(div, block, cellWidth, startDate);
+        			if (callback) { callback(block.data("block-data")); }
+        		}
+        	});
+        }
+        
+        function updateDataAndPosition(div, block, cellWidth, startDate) {
+        	var container = jQuery("div.ganttview-slide-container", div);
+        	var scroll = container.scrollLeft();
+			var offset = block.offset().left - container.offset().left - 1 + scroll;
+			
+			// Set new start date
+			var daysFromStart = Math.round(offset / cellWidth);
+			var newStart = startDate.clone().addDays(daysFromStart);
+			block.data("block-data").start = newStart;
+
+			// Set new end date
+        	var width = block.outerWidth();
+			var numberOfDays = Math.round(width / cellWidth) - 1;
+			block.data("block-data").end = newStart.clone().addDays(numberOfDays);
+			jQuery("div.ganttview-block-text", block).text(numberOfDays + 1);
+			
+			// Remove top and left properties to avoid incorrect block positioning,
+        	// set position to relative to keep blocks relative to scrollbar when scrolling
+			block.css("top", "").css("left", "")
+				.css("position", "relative").css("margin-left", offset + "px");
+        }
+        */
+        return {
+        	apply: apply	
+        };
+	}
 	
 	var DateUtils = {
     	
@@ -416,6 +633,30 @@ MIT License Applies
             while (date.compareTo(end) == -1) { count = count + 1; date.addDays(1); }
             return count;
         },
+
+		monthsBetween: function (start, end) {
+			if (!start || !end) { return 0; }
+			if (start.getYear() == 1901 || end.getYear() == 8099) { return 0; }
+			var count = 0, date = start.clone();
+			var firstMonth = date.getMonth();
+			while (date.compareTo(end) == -1) {
+				count += 1;
+				date.moveToLastDayOfMonth().addDays(1);
+			}
+			return count;
+		},
+		
+		daysInMonths: function (start, end) {
+			if (!start || !end) { return 0; }
+			if (start.getYear() == 1901 || end.getYear() == 8099) { return 0; }
+			var count = 0, date = start.clone();
+			var firstMonth = date.getMonth();
+			while (date.compareTo(end) == -1) {
+				count += Date.getDaysInMonth(date.getYear(), date.getMonth());
+				date.moveToLastDayOfMonth().addDays(1);
+			}
+			return count;
+		},
         
         isWeekend: function (date) {
             return date.getDay() % 6 == 0;

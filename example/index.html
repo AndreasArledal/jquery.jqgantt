@@ -17,7 +17,7 @@
 		<script type="text/javascript" charset="utf-8">
 			var ganttData = [
 				{
-					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
+					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today().add(2).days(), "class": "red", "color": "#ff0000"
 				},
 				{
 					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
@@ -63,7 +63,8 @@
 				$("#gantt").jqgantt({
 					data: ganttData,
 					width: 800,
-					cellWidth: 21
+					cellWidth: 100,
+					zoomLevel: "week"
 				});
 			});
 			
