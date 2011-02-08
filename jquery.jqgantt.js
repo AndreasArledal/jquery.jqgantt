@@ -18,18 +18,15 @@ MIT License Applies
 				width: 800,
 				height: 400,
 				outerBorder: "1px solid #999",
-				behavior: {
-	            	clickable: true,
-	            	draggable: true,
-	            	resizable: true
-	            }
+	            clickable: true,
+	            draggable: false,
+	            resizable: false
 			};
 
 			var options = $.extend(defaults, options);
 
 			return this.each(function() {
 				var o = options;
-				
 				var headerPartsHeight = 22;
 				var headersHeight;
 				switch (o.zoomLevel) {
@@ -48,9 +45,9 @@ MIT License Applies
 				var startEnd = DateUtils.getBoundaryDatesFromData(o.data, 10);
 				o.start = startEnd[0];
 				o.end = startEnd[1];
-				var container = $(this);
+				var container = $('<div>', { "class": "jqgantt-wrapper", "id": "test"});
+				$(this).append(container);
 				BuildData.scrollers(o, container);
-				container.addClass("jqgantt-wrapper");
 				container.css('width', o.width).css('height', o.height);
 				BuildData.headers(o, container);
 				BuildData.rows(o, container);
@@ -543,6 +540,15 @@ MIT License Applies
 				if (opts.data[i].color) {
 					div.css('background-color', opts.data[i].color);
 				}
+				if (opts.data[i].text) {
+					var span = $("<span>", {
+						"class": "jqgantt-block-text",
+						"text": opts.data[i].text
+					});
+					div.append(span);
+				}
+				var blockData = { name: opts.data[i].name, text: opts.data[i].text };
+				div.data("block-data", blockData);
 				blockContainer.append(div);
 			}
 		}
@@ -551,8 +557,7 @@ MIT License Applies
 	var Behavior = function (div, opts) {
 		
 		function apply() {
-			
-			if (opts.behavior.clickable) { 
+			if (opts.clickable) { 
             	bindBlockClick(div, opts.behavior.onClick); 
         	}
         	/*
@@ -567,7 +572,7 @@ MIT License Applies
 		}
 
         function bindBlockClick(div, callback) {
-            jQuery("div.jqgantt-block", div).live("click", function () {
+            $("div.jqgantt-block").live("click", function () { // TODO just in this div
                 if (callback) { callback(jQuery(this).data("block-data")); }
             });
         }
