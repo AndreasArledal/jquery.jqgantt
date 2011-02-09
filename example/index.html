@@ -7,64 +7,100 @@
 	
 	<body>
 		<h1>jqgantt</h1>
-		<div id="gantt"></div>
+		<div id="gantt" style="float: left;"></div>
+		<div style="float: right; margin-right: 15px; width: 300px; border: 1px solid #999; padding: 10px;" id="selected">
+			None selected
+		</div>
 		
 		
 		<script src="../lib/jquery-1.4.4.min.js"></script>
 		<script src="../lib/date.js"></script>
 		<script src="../lib/jquery.fixedtable.js"></script>
+		<script src="../lib/jquery-ui-1.8.9.custom.min.js"></script>
 		<script src="../jquery.jqgantt.js"></script>
+		<link rel="stylesheet" href="../lib/jquery-ui-1.8.9.custom.css" type="text/css" media="screen" title="no title" charset="utf-8">
 		<script type="text/javascript" charset="utf-8">
 			var ganttData = [
 				{
-					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today().add(2).days(), "class": "red", "color": "#ff0000"
+					id: 1,
+					name: "AIR-1",
+					text: "734",
+					start: Date.parse("October 5th 2010"),
+					end: Date.parse("December 5th 2010"),
+					color: "blue",
+					data: {
+						testData: 12, node: "Node1"
+					}
 				},
 				{
-					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
+					id: 2,
+					name: "AIR-1",
+					text: "732",
+					start: Date.parse("November 30th 2010"),
+					end: Date.parse("January 13th 2011"),
+					color: "yellow"
 				},
 				{
-					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
+					id: 3,
+					name: "AIR-1",
+					text: "741",
+					start: Date.parse("January 2nd 2011"),
+					end: Date.parse("February 20th 2011"),
+					color: "red"
 				},
 				{
-					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
+					id: 4,
+					name: "AIR-2",
+					text: "726",
+					start: Date.parse("October 10th 2010"),
+					end: Date.parse("January 13th 2011"),
+					color: "yellow"
 				},
 				{
-					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
+					id: 5,
+					name: "AIR-2",
+					text: "741",
+					start: Date.parse("January 2nd 2011"),
+					end: Date.parse("February 20th 2011"),
+					color: "red"
 				},
 				{
-					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
+					id: 6,
+					name: "AIR-3",
+					text: "746",
+					start: Date.parse("October 7th 2010"),
+					end: Date.parse("December 2nd 2010"),
+					color: "blue"
 				},
 				{
-					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
+					id: 7,
+					name: "AIR-3",
+					text: "747",
+					start: Date.parse("November 24th 2010"),
+					end: Date.parse("December 13th 2010"),
+					color: "green"
 				},
 				{
-					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
-				},
-				{
-					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
-				},
-				{
-					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
-				},
-				{
-					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
-				},
-				{
-					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
-				},
-				{
-					id: 1, name: "Feature 1", start: Date.today().add(-1).month(), "end": Date.today()
-				},
-				{
-					id: 2, name: "Feature 2", start: Date.today().add(-10).days(), end: Date.today()
-				},
+					id: 8,
+					name: "AIR-3",
+					text: "748",
+					start: Date.parse("December 9th 2010"),
+					end: Date.parse("March 13th 2011"),
+					color: "orange"
+				}
 			]
 			$(function(){
 				$("#gantt").jqgantt({
 					data: ganttData,
-					width: 800,
-					cellWidth: 100,
-					zoomLevel: "week"
+					width: 600,
+					height: 300,
+					cellWidth: 30,
+					zoomLevel: "week",
+					behavior: {
+						onClick: function(data) {
+							$("#selected").html('<strong>Team:</strong> ' + data.name + '<br /><strong>PMR:</strong>' + data.text);
+						}
+					}
 				});
 			});
 			

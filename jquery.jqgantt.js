@@ -19,8 +19,8 @@ MIT License Applies
 				height: 400,
 				outerBorder: "1px solid #999",
 	            clickable: true,
-	            draggable: false,
-	            resizable: false
+	            draggable: true,
+	            resizable: true
 			};
 
 			var options = $.extend(defaults, options);
@@ -548,7 +548,7 @@ MIT License Applies
 					div.append(span);
 				}
 				var blockData = { name: opts.data[i].name, text: opts.data[i].text };
-				div.data("block-data", blockData);
+				div.data("block-data", opts.data[i]);
 				blockContainer.append(div);
 			}
 		}
@@ -560,15 +560,13 @@ MIT License Applies
 			if (opts.clickable) { 
             	bindBlockClick(div, opts.behavior.onClick); 
         	}
-        	/*
-            if (opts.behavior.resizable) { 
+            if (opts.resizable) { 
             	bindBlockResize(div, opts.cellWidth, opts.start, opts.behavior.onResize); 
         	}
             
-            if (opts.behavior.draggable) { 
+            if (opts.draggable) { 
             	bindBlockDrag(div, opts.cellWidth, opts.start, opts.behavior.onDrag); 
         	}
-			*/
 		}
 
         function bindBlockClick(div, callback) {
@@ -576,14 +574,13 @@ MIT License Applies
                 if (callback) { callback(jQuery(this).data("block-data")); }
             });
         }
-        /*
         function bindBlockResize(div, cellWidth, startDate, callback) {
         	jQuery("div.jqgantt-block", div).resizable({
         		grid: cellWidth, 
         		handles: "e,w",
         		stop: function () {
         			var block = jQuery(this);
-        			updateDataAndPosition(div, block, cellWidth, startDate);
+        			//updateDataAndPosition(div, block, cellWidth, startDate);
         			if (callback) { callback(block.data("block-data")); }
         		}
         	});
@@ -595,7 +592,7 @@ MIT License Applies
         		grid: [cellWidth, cellWidth],
         		stop: function () {
         			var block = jQuery(this);
-        			updateDataAndPosition(div, block, cellWidth, startDate);
+        			//updateDataAndPosition(div, block, cellWidth, startDate);
         			if (callback) { callback(block.data("block-data")); }
         		}
         	});
@@ -622,7 +619,7 @@ MIT License Applies
 			block.css("top", "").css("left", "")
 				.css("position", "relative").css("margin-left", offset + "px");
         }
-        */
+
         return {
         	apply: apply	
         };
