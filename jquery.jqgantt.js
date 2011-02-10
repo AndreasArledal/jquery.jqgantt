@@ -20,7 +20,9 @@ MIT License Applies
 				outerBorder: "1px solid #999",
 	            clickable: true,
 	            draggable: true,
-	            resizable: true
+	            resizable: true,
+				expandableChilds: true,
+				expandedChilds: false
 			};
 
 			var options = $.extend(defaults, options);
@@ -507,8 +509,12 @@ MIT License Applies
 				"top": opts.headersHeight + "px"
 			}});
 			container.append(labelsDiv).append(gridDiv);
-			buildRows(opts.data, 0);
+			for (var i = 0; i < opts.data.length; i++) {
+				buildRows(opts.data[i].items, 0);
+			}
 			function buildRows(data, level) {
+				var hidden = false;
+				if (level > 0 && !opts.expandedChilds && opts.expandableChilds) { hidden = true }
 				for (var i = 0; i < data.length; i++) {
 					var size, offset;
 					switch (opts.zoomLevel) {
@@ -526,9 +532,17 @@ MIT License Applies
 							break;
 					}
 					var classes = "jqgantt-block" + ((data[i].class) ? ' ' + data[i].class : '');
-					labelsDiv.append('<div class="jqgantt-label">'+data[i].name+"</div>");
+					var labelDiv = $('<div>', { 
+						"class": "jqgantt-label",
+						"css": {
+							"padding-left": 10 * level + 4 + "px"
+						},
+						"text": data[i].name
+					});
+					labelsDiv.append(labelDiv);
 					var row = $("<div>", { "class": "jqgantt-grid-row" });
 					var blockContainer = $("<div>", {"class": "jqgantt-blocks-row" });
+					if (hidden) { row.hide(); labelDiv.hide(); blockContainer.hide()}
 					gridDiv.append(row).append(blockContainer);
 					row.append(BuildData.rowDivs);
 					var div = $("<div>", {
@@ -674,18 +688,21 @@ MIT License Applies
         },
 
 		getBoundaryDatesFromData: function (data, minDays) {
-			var minStart = data[0].start;
-			var maxEnd = data[0].end;
+			var minStart = data[0].items[0].start;
+			var maxEnd = data[0].items[0].end;
+			for (var i = 0; i < data.length; i++) {
+				findDates(data[i].items);
+			}
 			function findDates(obj) {
-				for (var i = 0; i < obj.length; i++) {
-					var start = obj[i].start;
-					var end = obj[i].end;
+				for (var j = 0; j < obj.length; j++) {
+					var start = obj[j].start;
+					var end = obj[j].end;
 					if (minStart.compareTo(start) == 1) { minStart = start; }
 					if (maxEnd.compareTo(end) == -1) { maxEnd = end; }
-					if (obj[i].children) { findDates(obj[i].children); }
+					if (obj[j].children) { findDates(obj[j].children); }
 				}
 			}
-			findDates(data);
+			
 			
 			// Insure that the width of the chart is at least the slide width to avoid empty
 			// whitespace to the right of the grid
