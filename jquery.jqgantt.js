@@ -665,19 +665,18 @@ MIT License Applies
         },
 
 		getBoundaryDatesFromData: function (data, minDays) {
-			var minStart = new Date(); 
-			var maxEnd = new Date();
-			for (var i = 0; i < data.length; i++) {
-				var start = data[i].start;
-				var end = data[i].end;
-				if (i == 0) { 
-					minStart = start;
-					maxEnd = end; 
+			var minStart = data[0].start;
+			var maxEnd = data[0].end;
+			function findDates(obj) {
+				for (var i = 0; i < obj.length; i++) {
+					var start = obj[i].start;
+					var end = obj[i].end;
+					if (minStart.compareTo(start) == 1) { minStart = start; }
+					if (maxEnd.compareTo(end) == -1) { maxEnd = end; }
+					if (obj[i].children) { findDates(obj[i].children); }
 				}
-				if (minStart.compareTo(start) == 1) { minStart = start; }
-				if (maxEnd.compareTo(end) == -1) { maxEnd = end; }
-				
 			}
+			findDates(data);
 			
 			// Insure that the width of the chart is at least the slide width to avoid empty
 			// whitespace to the right of the grid
