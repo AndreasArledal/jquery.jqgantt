@@ -507,50 +507,59 @@ MIT License Applies
 				"top": opts.headersHeight + "px"
 			}});
 			container.append(labelsDiv).append(gridDiv);
-			for (var i = 0; i < opts.data.length; i++) {
-				var size, offset;
-				switch (opts.zoomLevel) {
-					case "day":
-						size = DateUtils.daysBetween(opts.data[i].start, opts.data[i].end) + 1;
-						offset = DateUtils.daysBetween(opts.start, opts.data[i].start) + 4;
-						break;
-					case "week":
-						size = DateUtils.daysBetween(opts.data[i].start, opts.data[i].end) / 7 + 1;
-						offset = DateUtils.daysBetween(opts.start, opts.data[i].start) / 7;
-						break;
-					case "month":
-						size = (DateUtils.daysBetween(opts.data[i].start, opts.data[i].end) + 1) * daySize;
-						offset = DateUtils.daysBetween(opts.start, opts.data[i].start) * daySize;
-						break;
-				}
-				var classes = "jqgantt-block" + ((opts.data[i].class) ? ' ' + opts.data[i].class : '');
-				labelsDiv.append('<div class="jqgantt-label">'+opts.data[i].name+"</div>");
-				var row = $("<div>", { "class": "jqgantt-grid-row" });
-				var blockContainer = $("<div>", {"class": "jqgantt-blocks-row" });
-				gridDiv.append(row).append(blockContainer);
-				row.append(BuildData.rowDivs);
-				var div = $("<div>", {
-					"class": classes,
-					"css": {
-						"width": ((size * opts.cellWidth) - 7) + "px",
-						"margin-left": ((offset * (opts.cellWidth) + 3)) + "px",
-						"z-index": "2"
+			buildRows(opts.data, 0);
+			function buildRows(data, level) {
+				for (var i = 0; i < data.length; i++) {
+					var size, offset;
+					switch (opts.zoomLevel) {
+						case "day":
+							size = DateUtils.daysBetween(data[i].start, data[i].end) + 1;
+							offset = DateUtils.daysBetween(opts.start, data[i].start) + 4;
+							break;
+						case "week":
+							size = DateUtils.daysBetween(data[i].start, data[i].end) / 7 + 1;
+							offset = DateUtils.daysBetween(opts.start, data[i].start) / 7;
+							break;
+						case "month":
+							size = (DateUtils.daysBetween(data[i].start, data[i].end) + 1) * daySize;
+							offset = DateUtils.daysBetween(opts.start, data[i].start) * daySize;
+							break;
 					}
-				});
-				if (opts.data[i].color) {
-					div.css('background-color', opts.data[i].color);
-				}
-				if (opts.data[i].text) {
-					var span = $("<span>", {
-						"class": "jqgantt-block-text",
-						"text": opts.data[i].text
+					var classes = "jqgantt-block" + ((data[i].class) ? ' ' + data[i].class : '');
+					labelsDiv.append('<div class="jqgantt-label">'+data[i].name+"</div>");
+					var row = $("<div>", { "class": "jqgantt-grid-row" });
+					var blockContainer = $("<div>", {"class": "jqgantt-blocks-row" });
+					gridDiv.append(row).append(blockContainer);
+					row.append(BuildData.rowDivs);
+					var div = $("<div>", {
+						"class": classes,
+						"css": {
+							"width": ((size * opts.cellWidth) - 7) + "px",
+							"margin-left": ((offset * (opts.cellWidth) + 3)) + "px",
+							"z-index": "2"
+						}
 					});
-					div.append(span);
+					if (data[i].color) {
+						div.css('background-color', data[i].color);
+					}
+					if (data[i].text) {
+						var span = $("<span>", {
+							"class": "jqgantt-block-text",
+							"text": data[i].text
+						});
+						div.append(span);
+					}
+					var blockData = { name: data[i].name, text: data[i].text };
+					div.data("block-data", data[i]);
+					blockContainer.append(div);
+					
+					if(data[i].children) {
+						buildRows(data[i].children, level + 1);
+					}
+					
 				}
-				var blockData = { name: opts.data[i].name, text: opts.data[i].text };
-				div.data("block-data", opts.data[i]);
-				blockContainer.append(div);
 			}
+			
 		}
 	};
 	
