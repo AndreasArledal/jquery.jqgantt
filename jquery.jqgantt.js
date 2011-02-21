@@ -22,7 +22,7 @@ MIT License Applies
 	            draggable: true,
 	            resizable: true,
 				expandableChilds: true,
-				expandedChilds: false
+				expandedChilds: true
 			};
 
 			var options = $.extend(defaults, options);
@@ -509,13 +509,23 @@ MIT License Applies
 				"top": opts.headersHeight + "px"
 			}});
 			container.append(labelsDiv).append(gridDiv);
+			var linkId = 0;
 			for (var i = 0; i < opts.data.length; i++) {
-				buildRows(opts.data[i].items, 0);
+				buildRows(opts.data[i].items, 0, null);
 			}
-			function buildRows(data, level) {
+			labelsDiv.find("div:first").addClass('first');
+			labelsDiv.find("div:last").addClass('last');
+			gridDiv.find("div.jqgantt-grid-row:first > div").addClass('first');
+			gridDiv.find("div.jqgantt-grid-row:last > div").addClass('last');
+			function buildRows(data, level, parent) {
 				var hidden = false;
-				if (level > 0 && !opts.expandedChilds && opts.expandableChilds) { hidden = true }
+				var childParentClass = 'parent';
+				if (level > 0) { childParentClass = 'child'; }
+				if (level > 0 && !opts.expandedChilds && opts.expandableChilds) { 
+					hidden = true;
+				}
 				for (var i = 0; i < data.length; i++) {
+					linkId++;
 					var size, offset;
 					switch (opts.zoomLevel) {
 						case "day":
@@ -533,18 +543,32 @@ MIT License Applies
 					}
 					var classes = "jqgantt-block" + ((data[i].class) ? ' ' + data[i].class : '');
 					var labelDiv = $('<div>', { 
-						"class": "jqgantt-label",
+						"class": "jqgantt-label " + childParentClass,
 						"css": {
-							"padding-left": 10 * level + 4 + "px"
+							"padding-left": 10 * level + "px"
 						},
 						"text": data[i].name
 					});
+					if (data[i].children) {
+						var link = $("<a>", { 
+							"class": "ui-icon " + ((opts.expandedChilds) ? 'ui-icon-triangle-1-s' : 'ui-icon-triangle-1-e'),
+							"href": "#",
+							"css": { "float": "left" }
+						}).data('link-id', linkId);
+						labelDiv.prepend(link);
+					} else {
+						labelDiv.css('padding-left', 10 * level + 16 + "px");
+					}
 					labelsDiv.append(labelDiv);
 					var row = $("<div>", { "class": "jqgantt-grid-row" });
+					if (parent) { row.data('parent', parent)}
 					var blockContainer = $("<div>", {"class": "jqgantt-blocks-row" });
 					if (hidden) { row.hide(); labelDiv.hide(); blockContainer.hide()}
 					gridDiv.append(row).append(blockContainer);
 					row.append(BuildData.rowDivs);
+					if (level == 0) {
+						row.prevAll('div.jqgantt-grid-row').first().find("div").addClass('last');
+					}
 					var div = $("<div>", {
 						"class": classes,
 						"css": {
@@ -568,7 +592,7 @@ MIT License Applies
 					blockContainer.append(div);
 					
 					if(data[i].children) {
-						buildRows(data[i].children, level + 1);
+						buildRows(data[i].children, level + 1, linkId);
 					}
 					
 				}

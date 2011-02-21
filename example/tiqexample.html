@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta charset="utf-8">
+	<meta name="Author" content="Andreas Arledal">
+	<title>jqgantt example</title>
+	<link rel="stylesheet" href="../jquery.jqgantt.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	
+	<body>
+		<h1>jqgantt</h1>
+		<div id="gantt" style="float: left;"></div>
+		<div style="float: right; margin-right: 15px; width: 300px; border: 1px solid #999; padding: 10px;" id="selected">
+			None selected
+		</div>
+		<div style="float: right; margin-right: 15px; margin-top: 15px; width: 300px; border: 1px solid #999; padding: 10px;">
+			<table style="font-size: 12px; font-family: tahoma,verdana,helvetica;">
+				<thead style="text-align: left;">
+					<tr>
+						<th>Color</th>
+						<th>Stage</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							<div style="height: 20px; padding: 4px; border: 1px solid black; width: 50px; text-align: center; background-color: #fff;">White</div>
+						</td>
+						<td>Experiment</td>
+					</tr>
+					<tr>
+						<td>
+							<div style="height: 20px; padding: 4px; border: 1px solid black; width: 50px; text-align: center; background-color: red;">Red</div>
+						</td>
+						<td>Input - Not Started QSM</td>
+					</tr>
+					<tr>
+						<td>
+							<div style="height: 20px; padding: 4px; border: 1px solid black; width: 50px; text-align: center; background-color: orange;">Orange</div>
+						</td>
+						<td>QSM Ongoing</td>
+					</tr>
+					<tr>
+						<td>
+							<div style="height: 20px; padding: 4px; border: 1px solid black; width: 50px; text-align: center; background-color: yellow;">Yellow</div>
+						</td>
+						<td>QSM Done</td>
+					</tr>
+					<tr>
+						<td>
+							<div style="height: 20px; padding: 4px; border: 1px solid black; width: 50px; text-align: center; background-color: green;">Green</div>
+						</td>
+						<td>RS/US Ongoing</td>
+					</tr>
+					<tr>
+						<td>
+							<div style="height: 20px; padding: 4px; border: 1px solid black; width: 50px; text-align: center; background-color: blue;">Blue</div>
+						</td>
+						<td>Design and FT</td>
+					</tr>
+					<tr>
+						<td>
+							<div style="height: 20px; padding: 4px; border: 1px solid black; width: 50px; text-align: center; color: white; background-color: indigo;">Indigo</div>
+						</td>
+						<td>LSV</td>
+					</tr>
+					<tr>
+						<td>
+							<div style="height: 20px; padding: 4px; border: 1px solid black; width: 50px; text-align: center; color: white; background-color: violet;">Violet</div>
+						</td>
+						<td>Release Project</td>
+					</tr>
+					<tr>
+						<td>
+							<div style="height: 20px; padding: 4px; border: 1px solid black; width: 50px; text-align: center; color: white; background-color: black;">Black</div>
+						</td>
+						<td>GA</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		
+		<script src="../lib/jquery-1.4.4.min.js"></script>
+		<script src="../lib/date.js"></script>
+		<script src="../lib/jquery.fixedtable.js"></script>
+		<script src="../jquery.jqgantt.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			var ganttData = [
+				{
+					id: 1,
+					name: "AIR-1",
+					text: "734",
+					start: Date.parse("October 5th 2010"),
+					end: Date.parse("December 5th 2010"),
+					color: "blue"
+				},
+				{
+					id: 2,
+					name: "AIR-1",
+					text: "732",
+					start: Date.parse("November 30th 2010"),
+					end: Date.parse("January 13th 2011"),
+					color: "yellow"
+				},
+				{
+					id: 3,
+					name: "AIR-1",
+					text: "741",
+					start: Date.parse("January 2nd 2011"),
+					end: Date.parse("February 20th 2011"),
+					color: "red"
+				},
+				{
+					id: 4,
+					name: "AIR-2",
+					text: "726",
+					start: Date.parse("October 10th 2010"),
+					end: Date.parse("January 13th 2011"),
+					color: "yellow"
+				},
+				{
+					id: 5,
+					name: "AIR-2",
+					text: "741",
+					start: Date.parse("January 2nd 2011"),
+					end: Date.parse("February 20th 2011"),
+					color: "red"
+				},
+				{
+					id: 6,
+					name: "AIR-3",
+					text: "746",
+					start: Date.parse("October 7th 2010"),
+					end: Date.parse("December 2nd 2010"),
+					color: "blue"
+				},
+				{
+					id: 7,
+					name: "AIR-3",
+					text: "747",
+					start: Date.parse("November 24th 2010"),
+					end: Date.parse("December 13th 2010"),
+					color: "green"
+				},
+				{
+					id: 8,
+					name: "AIR-3",
+					text: "748",
+					start: Date.parse("December 9th 2010"),
+					end: Date.parse("March 13th 2011"),
+					color: "orange"
+				},
+				{
+					id: 1,
+					name: "AIR-1",
+					text: "734",
+					start: Date.parse("October 5th 2010"),
+					end: Date.parse("December 5th 2010"),
+					color: "blue"
+				},
+				{
+					id: 2,
+					name: "AIR-1",
+					text: "732",
+					start: Date.parse("November 30th 2010"),
+					end: Date.parse("January 13th 2011"),
+					color: "yellow"
+				},
+				{
+					id: 3,
+					name: "AIR-1",
+					text: "741",
+					start: Date.parse("January 2nd 2011"),
+					end: Date.parse("February 20th 2011"),
+					color: "red"
+				},
+				{
+					id: 4,
+					name: "AIR-2",
+					text: "726",
+					start: Date.parse("October 10th 2010"),
+					end: Date.parse("January 13th 2011"),
+					color: "yellow"
+				},
+				{
+					id: 5,
+					name: "AIR-2",
+					text: "741",
+					start: Date.parse("January 2nd 2011"),
+					end: Date.parse("February 20th 2011"),
+					color: "red"
+				},
+				{
+					id: 6,
+					name: "AIR-3",
+					text: "746",
+					start: Date.parse("October 7th 2010"),
+					end: Date.parse("December 2nd 2010"),
+					color: "blue"
+				},
+				{
+					id: 7,
+					name: "AIR-3",
+					text: "747",
+					start: Date.parse("November 24th 2010"),
+					end: Date.parse("December 13th 2010"),
+					color: "green"
+				},
+				{
+					id: 8,
+					name: "AIR-3",
+					text: "748",
+					start: Date.parse("December 9th 2010"),
+					end: Date.parse("March 13th 2011"),
+					color: "orange"
+				},
+				{
+					id: 1,
+					name: "AIR-1",
+					text: "734",
+					start: Date.parse("October 5th 2010"),
+					end: Date.parse("December 5th 2010"),
+					color: "blue"
+				},
+				{
+					id: 2,
+					name: "AIR-1",
+					text: "732",
+					start: Date.parse("November 30th 2010"),
+					end: Date.parse("January 13th 2011"),
+					color: "yellow"
+				},
+				{
+					id: 3,
+					name: "AIR-1",
+					text: "741",
+					start: Date.parse("January 2nd 2011"),
+					end: Date.parse("February 20th 2011"),
+					color: "red"
+				},
+				{
+					id: 4,
+					name: "AIR-2",
+					text: "726",
+					start: Date.parse("October 10th 2010"),
+					end: Date.parse("January 13th 2011"),
+					color: "yellow"
+				},
+				{
+					id: 5,
+					name: "AIR-2",
+					text: "741",
+					start: Date.parse("January 2nd 2011"),
+					end: Date.parse("February 20th 2011"),
+					color: "red"
+				},
+				{
+					id: 6,
+					name: "AIR-3",
+					text: "746",
+					start: Date.parse("October 7th 2010"),
+					end: Date.parse("December 2nd 2010"),
+					color: "blue"
+				},
+				{
+					id: 7,
+					name: "AIR-3",
+					text: "747",
+					start: Date.parse("November 24th 2010"),
+					end: Date.parse("December 13th 2010"),
+					color: "green"
+				},
+				{
+					id: 8,
+					name: "AIR-3",
+					text: "748",
+					start: Date.parse("December 9th 2010"),
+					end: Date.parse("March 13th 2011"),
+					color: "orange"
+				}
+			]
+			$(function(){
+				$("#gantt").jqgantt({
+					data: ganttData,
+					width: 800,
+					height: 500,
+					cellWidth: 30,
+					zoomLevel: "week",
+					behavior: {
+						onClick: function(data) {
+							$("#selected").html('<strong>Team:</strong> ' + data.name + '<br /><strong>PMR:</strong>' + data.text);
+						}
+					}
+				});
+			});
+			
+			
+			
+		</script>
+	</body>
+</html>

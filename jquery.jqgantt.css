@@ -86,9 +86,18 @@
 
 .jqgantt-label {
 	height: 22px;
-	border-bottom: 1px solid #999;
+	border-top: 1px solid #999;
 	padding: 4px;
 	background: #fff;
+}
+.jqgantt-label.child {
+	border-top: 1px solid #eee;
+}
+.jqgantt-label.first {
+	border: none;
+}
+.jqgantt-label.last {
+	border-bottom: 1px solid #999;
 }
 .jqgantt-block {
 	position: relative;
@@ -114,6 +123,13 @@
 }
 .jqgantt-grid-row-cell.weekend {
 	background-color: #fafafa;
+}
+.jqgantt-grid-row-cell.last {
+	border-bottom: 1px solid #999;
+}
+.jqgantt-grid-row-cell.first {
+	border-top: 1px solid #999;
+	margin-top: -1px;
 }
 .jqgantt-block-text {
 	position: absolute;
