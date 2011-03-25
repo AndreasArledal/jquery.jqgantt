@@ -511,13 +511,13 @@ MIT License Applies
 			container.append(labelsDiv).append(gridDiv);
 			var linkId = 0;
 			for (var i = 0; i < opts.data.length; i++) {
-				buildRows(opts.data[i].items, 0, null);
+				buildRows(opts.data[i].items, 0, null, '');
 			}
 			labelsDiv.find("div:first").addClass('first');
 			labelsDiv.find("div:last").addClass('last');
-			gridDiv.find("div.jqgantt-grid-row:first > div").addClass('first');
-			gridDiv.find("div.jqgantt-grid-row:last > div").addClass('last');
-			function buildRows(data, level, parent) {
+			gridDiv.find("div.jqgantt-grid-row:first").addClass('first');
+			gridDiv.find("div.jqgantt-grid-row:last").addClass('last').addClass('last-in-group');
+			function buildRows(data, level, parent, linkClasses) {
 				var hidden = false;
 				var childParentClass = 'parent';
 				if (level > 0) { childParentClass = 'child'; }
@@ -543,7 +543,7 @@ MIT License Applies
 					}
 					var classes = "jqgantt-block" + ((data[i].class) ? ' ' + data[i].class : '');
 					var labelDiv = $('<div>', { 
-						"class": "jqgantt-label " + childParentClass,
+						"class": "jqgantt-label " + childParentClass + " " + " " + linkClasses + " parent_" + parent,
 						"css": {
 							"padding-left": 10 * level + "px"
 						},
@@ -551,23 +551,34 @@ MIT License Applies
 					});
 					if (data[i].children) {
 						var link = $("<a>", { 
-							"class": "ui-icon " + ((opts.expandedChilds) ? 'ui-icon-triangle-1-s' : 'ui-icon-triangle-1-e'),
+							"class": "parent ui-icon " + ((opts.expandedChilds) ? 'ui-icon-triangle-1-s' : 'ui-icon-triangle-1-e'),
 							"href": "#",
 							"css": { "float": "left" }
-						}).data('link-id', linkId);
+						})
+						.data('link-id', linkId)
+						.click(function() { 
+							var childs = $('.parent_'+$(this).data('link-id'));
+							if ($(this).hasClass('ui-icon-triangle-1-s')) {
+								childs.hide();
+							} else {
+								childs.show();
+								$(".parent", childs).addClass('ui-icon-triangle-1-s').removeClass('ui-icon-triangle-1-e');
+							}
+							$(this).toggleClass('ui-icon-triangle-1-s ui-icon-triangle-1-e');
+						});
 						labelDiv.prepend(link);
 					} else {
 						labelDiv.css('padding-left', 10 * level + 16 + "px");
 					}
 					labelsDiv.append(labelDiv);
-					var row = $("<div>", { "class": "jqgantt-grid-row" });
+					var row = $("<div>", { "class": "jqgantt-grid-row parent_" + parent + " " + linkClasses});
 					if (parent) { row.data('parent', parent)}
-					var blockContainer = $("<div>", {"class": "jqgantt-blocks-row" });
-					if (hidden) { row.hide(); labelDiv.hide(); blockContainer.hide()}
-					gridDiv.append(row).append(blockContainer);
+					if (hidden) { row.hide(); labelDiv.hide();}
+					gridDiv.append(row);
 					row.append(BuildData.rowDivs);
 					if (level == 0) {
-						row.prevAll('div.jqgantt-grid-row').first().find("div").addClass('last');
+						row.prevAll('div.jqgantt-grid-row').first().addClass('last-in-group');
+						row.addClass('first-in-group');
 					}
 					var div = $("<div>", {
 						"class": classes,
@@ -589,10 +600,10 @@ MIT License Applies
 					}
 					var blockData = { name: data[i].name, text: data[i].text };
 					div.data("block-data", data[i]);
-					blockContainer.append(div);
+					row.append(div);
 					
 					if(data[i].children) {
-						buildRows(data[i].children, level + 1, linkId);
+						buildRows(data[i].children, level + 1, linkId, linkClasses + " parent_"+parent);
 					}
 					
 				}
